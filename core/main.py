@@ -23,6 +23,6 @@ while True:  # main game loop
 
         if event.type == MOUSEBUTTONDOWN:
             mpos = pygame.mouse.get_pos()
-            pygame.display.set_caption(str(mpos))
+            print mpos
             pygame.draw.circle(DISPLAYSURFACE, BLUE, get_square_center(mpos[0], mpos[1]), 15, 2)
     pygame.display.update()
