@@ -2,6 +2,7 @@ __author__ = 'Alexey'
 from cell import *
 import random
 from colors import *
+import sys
 
 
 def get_square_center(x, y):
@@ -18,66 +19,50 @@ def init_table():
     return table
 
 
-def get_free_cells(cells):
+def get_free_cells(all_cells):
     result = []
-    for cell in cells:
+    for cell in all_cells:
         if cell.state == 0:
             result.append(cell)
     return result
 
 
-def get_player_cells(cells):
+def get_player_cells(all_cells):
     result = {}
-    for cell in cells:
+    for cell in all_cells:
         if cell.state == 1:
             result[cell.get_coordinates()] = cell
     return result
 
 
-def get_computer_cells(cells):
+def get_computer_cells(all_cells):
     result = {}
-    for cell in cells:
+    for cell in all_cells:
         if cell.state == 2:
             result[cell.get_coordinates()] = cell
     return result
 
 
-def computer_turn(pygame, DISPLAYSURFACE, table):
-    free_cells = get_free_cells(table.values())
-    position = random.randint(0, len(free_cells) - 1)
-    free_cells[position].set_state(2)
-    draw_cross(pygame, DISPLAYSURFACE, free_cells[position])
-
-
-def draw_cross(pygame, DISPLAYSURFACE, computer_point):
-    pygame.draw.line(DISPLAYSURFACE, RED,
-                     (computer_point.get_coordinates()[0] - 10, computer_point.get_coordinates()[1] - 10),
-                     (computer_point.get_coordinates()[0] + 10, computer_point.get_coordinates()[1] + 10), 3)
-    pygame.draw.line(DISPLAYSURFACE, RED,
-                     (computer_point.get_coordinates()[0] - 10, computer_point.get_coordinates()[1] + 10),
-                     (computer_point.get_coordinates()[0] + 10, computer_point.get_coordinates()[1] - 10), 3)
-
-
-def check_for_free(free_cells, cell):
+def contains(list, element):
     try:
-        free_cells.index(cell)
+        list.index(element)
     except ValueError:
         return False
     return True
 
 
-def check_cells_sequence(cell, cells, x_direction, y_direction):
+def check_cells_sequence(cell, cells_container, x_direction, y_direction):
     x = cell.get_coordinates()[0]
     y = cell.get_coordinates()[1]
     for i in range(1, 5, 1):
         try:
-            cells[(x + x_direction * i * 40, y + y_direction * i * 40)]
+            cells_container[(x + x_direction * i * 40, y + y_direction * i * 40)]
         except KeyError:
             return False
     return True
 
 
-def check_for_winner(table):
+def check_for_win(table):
     player_cells = get_player_cells(table.values())
     computer_cells = get_computer_cells(table.values())
 
@@ -90,6 +75,7 @@ def check_for_winner(table):
                 check_cells_sequence(cell, player_cells, 0, 1) or \
                 check_cells_sequence(cell, player_cells, -1, 1) or \
                 check_cells_sequence(cell, player_cells, -1, 0):
+            print "Player win!"
             return 1
     for cell in computer_cells.values():
         if check_cells_sequence(cell, computer_cells, -1, -1) or \
@@ -100,7 +86,13 @@ def check_for_winner(table):
                 check_cells_sequence(cell, computer_cells, 0, 1) or \
                 check_cells_sequence(cell, computer_cells, -1, 1) or \
                 check_cells_sequence(cell, computer_cells, -1, 0):
+            print "Computer win!"
             return 2
     return 0
+
+
+def end_game(pygame):
+    pygame.quit()
+    sys.exit()
 
 

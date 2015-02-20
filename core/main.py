@@ -1,10 +1,9 @@
 __author__ = 'Alexey'
-import sys
 
 import pygame
 from pygame.locals import *
-
 from functions import *
+from computer import *
 
 pygame.init()
 DISPLAYSURFACE = pygame.display.set_mode((400, 400))
@@ -19,14 +18,13 @@ for i in range(40, 361, 40):
 while True:  # main game loop
     for event in pygame.event.get():
         if event.type == QUIT or (event.type == KEYDOWN and event.key == pygame.K_ESCAPE):
-            pygame.quit()
-            sys.exit()
+            end_game(pygame)
 
         if event.type == MOUSEBUTTONDOWN:
             mpos = get_square_center(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
             cell = table.get(mpos)
             free_cells = get_free_cells(table.values())
-            if not check_for_free(free_cells, cell):
+            if not contains(free_cells, cell):
                 break
 
             cell.set_state(1)
@@ -36,15 +34,9 @@ while True:  # main game loop
             computer_turn(pygame, DISPLAYSURFACE, table)
             pygame.display.update()
 
-            winner_check = check_for_winner(table)
-            if winner_check == 1:
-                print "Player win!"
-                pygame.quit()
-                sys.exit()
-            elif winner_check == 2:
-                print "Computer win!"
-                pygame.quit()
-                sys.exit()
+            win_check = check_for_win(table)
+            if win_check != 0:
+                end_game(pygame)
     pygame.display.update()
 
 
